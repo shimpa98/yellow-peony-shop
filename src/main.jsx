@@ -3,6 +3,12 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 
+// Clean Telegram query parameters from URL
+if (window.location.hash.includes('tgWebAppData')) {
+  const cleanHash = window.location.hash.split('&')[0] || '#/'
+  window.history.replaceState(null, '', cleanHash)
+}
+
 class ErrorBoundary extends Component {
   state = { error: null }
 
