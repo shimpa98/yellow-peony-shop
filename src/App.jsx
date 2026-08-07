@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppProvider } from './context/AppProvider'
 import Layout from './components/Layout'
 import CatalogPage from './pages/CatalogPage'
@@ -18,6 +18,7 @@ export default function App() {
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="favorites" element={<FavoritesPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
       </HashRouter>

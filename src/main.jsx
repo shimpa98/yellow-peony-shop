@@ -3,10 +3,14 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 
-// Clean Telegram query parameters from URL
-if (window.location.hash.includes('tgWebAppData')) {
-  const cleanHash = window.location.hash.split('&')[0] || '#/'
-  window.history.replaceState(null, '', cleanHash)
+// Clean Telegram query parameters from URL hash immediately
+if (window.location.hash) {
+  const hash = window.location.hash
+  if (hash.includes('tgWebAppData') || hash.includes('tgWebAppVersion')) {
+    // Force redirect to root
+    window.history.replaceState(null, '', '#/')
+    console.log('Cleaned Telegram parameters from hash:', hash, '->', '#/')
+  }
 }
 
 class ErrorBoundary extends Component {
