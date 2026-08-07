@@ -4,21 +4,21 @@ import { useApp } from '../context/AppProvider'
 import { formatPrice } from '../components/ProductCard'
 import './Profile.css'
 
-const STATUS_LABELS = {
-  new: 'Новый',
-  processing: 'В обработке',
-  delivering: 'Доставляется',
-  completed: 'Выполнен',
-  cancelled: 'Отменён',
-}
-
 export default function ProfilePage() {
   const location = useLocation()
-  const { tgUser, dbUser, orders, updatePhone, isTelegram, loading } = useApp()
+  const { tgUser, dbUser, orders, updatePhone, isTelegram, loading, t, lang } = useApp()
   const [phone, setPhone] = useState(dbUser?.phone ?? '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [showSuccess, setShowSuccess] = useState(location.state?.orderSuccess ?? false)
+
+  const STATUS_LABELS = {
+    new: t.statusNew,
+    processing: t.statusProcessing,
+    delivering: t.statusProcessing,
+    completed: t.statusCompleted,
+    cancelled: t.statusCancelled,
+  }
 
   useEffect(() => {
     if (dbUser?.phone) setPhone(dbUser.phone)
@@ -53,7 +53,7 @@ export default function ProfilePage() {
     return (
       <div className="page profile-page">
         <header className="page-header">
-          <h1>Профиль</h1>
+          <h1>{t.profileTitle}</h1>
         </header>
         <div className="profile-hint">
           <p>Данные Telegram не получены.</p>
@@ -66,7 +66,7 @@ export default function ProfilePage() {
   return (
     <div className="page profile-page">
       <header className="page-header">
-        <h1>Профиль</h1>
+        <h1>{t.profileTitle}</h1>
       </header>
 
       {showSuccess && (
@@ -92,12 +92,12 @@ export default function ProfilePage() {
 
       <form className="phone-form" onSubmit={handleSavePhone}>
         <label>
-          Телефон для доставки
+          {t.phone}
           <input
             type="tel"
             value={phone}
             onChange={(e) => { setPhone(e.target.value); setSaved(false) }}
-            placeholder="+7 (999) 123-45-67"
+            placeholder={t.phonePlaceholder}
           />
         </label>
         <button type="submit" className="btn-secondary" disabled={saving}>
@@ -106,16 +106,16 @@ export default function ProfilePage() {
       </form>
 
       <section className="orders-section">
-        <h3>Мои заказы</h3>
+        <h3>{t.ordersTitle}</h3>
         {orders.length === 0 ? (
-          <p className="no-orders">Заказов пока нет</p>
+          <p className="no-orders">{t.ordersEmpty}</p>
         ) : (
           <div className="orders-list">
             {orders.map((order) => (
               <div key={order.id} className="order-card">
                 <div className="order-header">
                   <span className="order-date">
-                    {new Date(order.created_at).toLocaleDateString('ru-RU', {
+                    {new Date(order.created_at).toLocaleDateString(lang === 'be' ? 'be-BY' : 'ru-RU', {
                       day: 'numeric',
                       month: 'long',
                       year: 'numeric',

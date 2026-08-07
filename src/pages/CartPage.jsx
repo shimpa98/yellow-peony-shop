@@ -4,28 +4,34 @@ import { formatPrice } from '../components/ProductCard'
 import './Cart.css'
 
 export default function CartPage() {
-  const { cart, cartTotal, updateCartQuantity, removeFromCart, getProductPrice } = useApp()
+  const { cart, cartTotal, updateCartQuantity, removeFromCart, getProductPrice, t } = useApp()
 
   if (cart.length === 0) {
     return (
       <div className="page cart-page">
         <header className="page-header">
-          <h1>Корзина</h1>
+          <h1>{t.cartTitle}</h1>
         </header>
         <div className="empty-state">
           <span>🛒</span>
-          <p>Корзина пуста</p>
-          <Link to="/" className="btn-primary">Перейти в каталог</Link>
+          <p>{t.cartEmpty}</p>
+          <Link to="/" className="btn-primary">{t.goToCatalog}</Link>
         </div>
       </div>
     )
   }
 
+  const getItemText = (count) => {
+    if (count === 1) return t.item
+    if (count < 5) return t.items
+    return t.manyItems
+  }
+
   return (
     <div className="page cart-page">
       <header className="page-header">
-        <h1>Корзина</h1>
-        <p className="page-subtitle">{cart.length} {cart.length === 1 ? 'товар' : cart.length < 5 ? 'товара' : 'товаров'}</p>
+        <h1>{t.cartTitle}</h1>
+        <p className="page-subtitle">{cart.length} {getItemText(cart.length)}</p>
       </header>
 
       <div className="cart-items">
@@ -53,7 +59,7 @@ export default function CartPage() {
                     <span>{item.quantity}</span>
                     <button type="button" onClick={() => updateCartQuantity(item.product_id, item.quantity + 1)}>+</button>
                   </div>
-                  <button type="button" className="btn-remove" onClick={() => removeFromCart(item.product_id)}>Удалить</button>
+                  <button type="button" className="btn-remove" onClick={() => removeFromCart(item.product_id)}>{t.remove}</button>
                 </div>
               </div>
             </div>
@@ -63,10 +69,10 @@ export default function CartPage() {
 
       <div className="cart-summary">
         <div className="cart-total">
-          <span>Итого</span>
+          <span>{t.total}</span>
           <span>{formatPrice(cartTotal)}</span>
         </div>
-        <Link to="/checkout" className="btn-primary btn-full">Оформить заказ</Link>
+        <Link to="/checkout" className="btn-primary btn-full">{t.checkout}</Link>
       </div>
     </div>
   )

@@ -1,11 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useTelegram } from '../hooks/useTelegram'
+import { useTranslation } from '../i18n/translations'
 
 const AppContext = createContext(null)
 
 export function AppProvider({ children }) {
   const { user: tgUser, webApp, isTelegram } = useTelegram()
+  const { t, lang } = useTranslation()
   const [dbUser, setDbUser] = useState(null)
   const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
@@ -273,6 +275,8 @@ export function AppProvider({ children }) {
     placeOrder,
     updatePhone,
     refreshOrders: loadOrders,
+    t,
+    lang,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

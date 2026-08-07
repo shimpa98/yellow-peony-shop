@@ -4,7 +4,7 @@ import ProductCard from '../components/ProductCard'
 import './Catalog.css'
 
 export default function CatalogPage() {
-  const { products, categories, loading } = useApp()
+  const { products, categories, loading, t } = useApp()
   const [activeCategory, setActiveCategory] = useState(null)
   const [search, setSearch] = useState('')
 
@@ -13,7 +13,7 @@ export default function CatalogPage() {
       <div className="page catalog-page">
         <div className="empty-state">
           <span>🌸</span>
-          <p>Загрузка каталога...</p>
+          <p>{t.loading}</p>
         </div>
       </div>
     )
@@ -28,14 +28,14 @@ export default function CatalogPage() {
   return (
     <div className="page catalog-page">
       <header className="page-header">
-        <h1>Цветочный магазин</h1>
-        <p className="page-subtitle">Свежие букеты с доставкой</p>
+        <h1>{t.catalogTitle}</h1>
+        <p className="page-subtitle">{t.catalogSubtitle}</p>
       </header>
 
       <div className="search-bar">
         <input
           type="search"
-          placeholder="Поиск цветов..."
+          placeholder={t.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -47,7 +47,7 @@ export default function CatalogPage() {
           className={`category-chip${!activeCategory ? ' active' : ''}`}
           onClick={() => setActiveCategory(null)}
         >
-          Все
+          {t.all}
         </button>
         {categories.map((cat) => (
           <button
@@ -64,7 +64,7 @@ export default function CatalogPage() {
       {filtered.length === 0 ? (
         <div className="empty-state">
           <span>🌿</span>
-          <p>Товары не найдены</p>
+          <p>{t.productsNotFound}</p>
         </div>
       ) : (
         <div className="product-grid">

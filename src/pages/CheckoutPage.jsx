@@ -6,7 +6,7 @@ import './Checkout.css'
 
 export default function CheckoutPage() {
   const navigate = useNavigate()
-  const { cart, cartTotal, dbUser, placeOrder, getProductPrice } = useApp()
+  const { cart, cartTotal, dbUser, placeOrder, getProductPrice, t } = useApp()
   const [address, setAddress] = useState('')
   const [phone, setPhone] = useState(dbUser?.phone ?? '')
   const [comment, setComment] = useState('')
@@ -23,11 +23,11 @@ export default function CheckoutPage() {
     setError('')
 
     if (!address.trim()) {
-      setError('Укажите адрес доставки')
+      setError(t.addressRequired)
       return
     }
     if (!phone.trim()) {
-      setError('Укажите номер телефона')
+      setError(t.phoneRequired)
       return
     }
 
@@ -49,11 +49,11 @@ export default function CheckoutPage() {
   return (
     <div className="page checkout-page">
       <header className="page-header">
-        <h1>Оформление заказа</h1>
+        <h1>{t.checkoutTitle}</h1>
       </header>
 
       <div className="checkout-summary">
-        <h2>Ваш заказ</h2>
+        <h2>{t.yourOrder}</h2>
         {cart.map((item) => {
           const product = item.products
           if (!product) return null
@@ -66,40 +66,40 @@ export default function CheckoutPage() {
           )
         })}
         <div className="checkout-total">
-          <span>Итого</span>
+          <span>{t.total}</span>
           <span>{formatPrice(cartTotal)}</span>
         </div>
       </div>
 
       <form className="checkout-form" onSubmit={handleSubmit}>
         <label>
-          Адрес доставки *
+          {t.deliveryAddress} *
           <textarea
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="Город, улица, дом, квартира"
+            placeholder={t.addressPlaceholder}
             rows={3}
             required
           />
         </label>
 
         <label>
-          Телефон *
+          {t.phone} *
           <input
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="+7 (999) 123-45-67"
+            placeholder={t.phonePlaceholder}
             required
           />
         </label>
 
         <label>
-          Комментарий к заказу
+          {t.comment}
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Пожелания к букету, время доставки..."
+            placeholder={t.commentPlaceholder}
             rows={2}
           />
         </label>
@@ -107,7 +107,7 @@ export default function CheckoutPage() {
         {error && <p className="form-error">{error}</p>}
 
         <button type="submit" className="btn-primary btn-full" disabled={submitting}>
-          {submitting ? 'Отправка...' : 'Подтвердить заказ'}
+          {submitting ? t.sending : t.submitOrder}
         </button>
       </form>
     </div>

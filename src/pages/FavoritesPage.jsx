@@ -4,20 +4,20 @@ import ProductCard from '../components/ProductCard'
 import './Favorites.css'
 
 export default function FavoritesPage() {
-  const { favorites } = useApp()
+  const { favorites, t } = useApp()
 
   return (
     <div className="page favorites-page">
       <header className="page-header">
-        <h1>Избранное</h1>
-        <p className="page-subtitle">Ваши любимые букеты</p>
+        <h1>{t.favoritesTitle}</h1>
+        <p className="page-subtitle">{t.favoritesSubtitle}</p>
       </header>
 
       {favorites.length === 0 ? (
         <div className="empty-state">
           <span>♡</span>
-          <p>Пока ничего не добавлено</p>
-          <Link to="/" className="btn-primary">Смотреть каталог</Link>
+          <p>{t.favoritesEmpty}</p>
+          <Link to="/" className="btn-primary">{t.viewCatalog}</Link>
         </div>
       ) : (
         <div className="product-grid">
