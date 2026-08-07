@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# На Netlify сайт в корне домена — base path не нужен (в отличие от GitHub Pages)
