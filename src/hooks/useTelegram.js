@@ -35,6 +35,7 @@ export function useTelegram() {
 
     function finish(tg, tgUser) {
       if (cancelled) return
+      console.log('Telegram WebApp ready:', { hasWebApp: !!tg, hasUser: !!tgUser })
       setWebApp(tg)
       setUser(tgUser)
       setReady(true)
@@ -50,12 +51,14 @@ export function useTelegram() {
     }
 
     if (import.meta.env.DEV) {
+      console.log('Using DEV_USER for development')
       finish(null, DEV_USER)
       return () => {
         cancelled = true
       }
     }
 
+    console.log('Telegram WebApp not found, waiting...')
     let attempts = 0
     const timer = window.setInterval(() => {
       attempts += 1
@@ -66,6 +69,7 @@ export function useTelegram() {
         finish(lateTg, readUser(lateTg))
       } else if (attempts >= 20) {
         window.clearInterval(timer)
+        console.warn('Telegram WebApp not found after 20 attempts, running without Telegram')
         finish(null, null)
       }
     }, 100)

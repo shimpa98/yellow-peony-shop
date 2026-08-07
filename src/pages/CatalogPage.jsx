@@ -4,9 +4,20 @@ import ProductCard from '../components/ProductCard'
 import './Catalog.css'
 
 export default function CatalogPage() {
-  const { products, categories } = useApp()
+  const { products, categories, loading } = useApp()
   const [activeCategory, setActiveCategory] = useState(null)
   const [search, setSearch] = useState('')
+
+  if (loading) {
+    return (
+      <div className="page catalog-page">
+        <div className="empty-state">
+          <span>🌸</span>
+          <p>Загрузка каталога...</p>
+        </div>
+      </div>
+    )
+  }
 
   const filtered = products.filter((p) => {
     const matchCategory = !activeCategory || p.category_id === activeCategory
