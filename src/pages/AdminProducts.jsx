@@ -148,6 +148,36 @@ export default function AdminProducts() {
 
 function ProductModal({ product, categories, onSave, onClose }) {
   const [form, setForm] = useState({ ...product })
+  const [uploading, setUploading] = useState(false)
+
+  async function handleImageUpload(e) {
+    const file = e.target.files[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}.${fileExt}`
+      const filePath = `${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('products')
+        .upload(filePath, file)
+
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath)
+
+      setForm({ ...form, image_url: data.publicUrl })
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      alert('Ошибка загрузки фото')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -196,10 +226,26 @@ function ProductModal({ product, categories, onSave, onClose }) {
             />
           </label>
           <label>
-            URL изображения
+            Фото
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={uploading}
+            />
+            {uploading && <span className="uploading">Загрузка...</span>}
+          </label>
+          {form.image_url && (
+            <div className="image-preview">
+              <img src={form.image_url} alt="Preview" />
+            </div>
+          )}
+          <label>
+            URL изображения (опционально)
             <input
               value={form.image_url || ''}
               onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+              placeholder="https://..."
             />
           </label>
           <label>
