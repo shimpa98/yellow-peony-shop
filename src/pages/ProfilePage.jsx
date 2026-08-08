@@ -6,12 +6,12 @@ import './Profile.css'
 
 export default function ProfilePage() {
   const location = useLocation()
-  const { tgUser, dbUser, orders, updatePhone, isTelegram, loading, t, lang } = useApp()
+  const { tgUser, dbUser, orders, updatePhone, isTelegram, loading, t } = useApp()
   const [phone, setPhone] = useState(dbUser?.phone ?? '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [showSuccess, setShowSuccess] = useState(location.state?.orderSuccess ?? false)
-  const currency = t.currency || 'RUB'
+  const currency = t.currency || 'BYN'
 
   const STATUS_LABELS = {
     new: t.statusNew,
@@ -116,7 +116,7 @@ export default function ProfilePage() {
               <div key={order.id} className="order-card">
                 <div className="order-header">
                   <span className="order-date">
-                    {new Date(order.created_at).toLocaleDateString(lang === 'be' ? 'be-BY' : 'ru-RU', {
+                    {new Date(order.created_at).toLocaleDateString('ru-RU', {
                       day: 'numeric',
                       month: 'long',
                       year: 'numeric',

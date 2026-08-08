@@ -55,29 +55,29 @@ export function AppProvider({ children }) {
   }, [])
 
   const loadCart = useCallback(async () => {
-    if (!userId) return
+    const effectiveUserId = userId || 'anonymous'
     const { data } = await supabase
       .from('cart')
       .select('*, products(*)')
-      .eq('user_id', userId)
+      .eq('user_id', effectiveUserId)
     setCart(data ?? [])
   }, [userId])
 
   const loadFavorites = useCallback(async () => {
-    if (!userId) return
+    const effectiveUserId = userId || 'anonymous'
     const { data } = await supabase
       .from('favorites')
       .select('product_id, products(*)')
-      .eq('user_id', userId)
+      .eq('user_id', effectiveUserId)
     setFavorites((data ?? []).map((f) => f.products).filter(Boolean))
   }, [userId])
 
   const loadOrders = useCallback(async () => {
-    if (!userId) return
+    const effectiveUserId = userId || 'anonymous'
     const { data } = await supabase
       .from('orders')
       .select('*')
-      .eq('user_id', userId)
+      .eq('user_id', effectiveUserId)
       .order('created_at', { ascending: false })
     setOrders(data ?? [])
   }, [userId])
@@ -120,11 +120,12 @@ export function AppProvider({ children }) {
 
   const addToCart = useCallback(
     async (productId, quantity = 1, priceOption = null) => {
-      if (!userId) return { error: 'Не авторизован' }
-
+      // Use a fallback ID for non-Telegram users
+      const effectiveUserId = userId || 'anonymous'
+      
       const { error } = await supabase.from('cart').upsert(
         {
-          user_id: userId,
+          user_id: effectiveUserId,
           product_id: productId,
           quantity,
           price_option: priceOption,
@@ -141,11 +142,11 @@ export function AppProvider({ children }) {
 
   const updateCartQuantity = useCallback(
     async (productId, quantity) => {
-      if (!userId) return
+      const effectiveUserId = userId || 'anonymous'
       if (quantity <= 0) {
-        await supabase.from('cart').delete().eq('user_id', userId).eq('product_id', productId)
+        await supabase.from('cart').delete().eq('user_id', effectiveUserId).eq('product_id', productId)
       } else {
-        await supabase.from('cart').update({ quantity }).eq('user_id', userId).eq('product_id', productId)
+        await supabase.from('cart').update({ quantity }).eq('user_id', effectiveUserId).eq('product_id', productId)
       }
       await loadCart()
     },
@@ -154,8 +155,8 @@ export function AppProvider({ children }) {
 
   const removeFromCart = useCallback(
     async (productId) => {
-      if (!userId) return
-      await supabase.from('cart').delete().eq('user_id', userId).eq('product_id', productId)
+      const effectiveUserId = userId || 'anonymous'
+      await supabase.from('cart').delete().eq('user_id', effectiveUserId).eq('product_id', productId)
       await loadCart()
       webApp?.HapticFeedback?.impactOccurred('light')
     },
@@ -164,14 +165,13 @@ export function AppProvider({ children }) {
 
   const toggleFavorite = useCallback(
     async (productId) => {
-      if (!userId) return { error: 'Не авторизован' }
-
+      const effectiveUserId = userId || 'anonymous'
       const isFav = favorites.some((p) => p.id === productId)
 
       if (isFav) {
-        await supabase.from('favorites').delete().eq('user_id', userId).eq('product_id', productId)
+        await supabase.from('favorites').delete().eq('user_id', effectiveUserId).eq('product_id', productId)
       } else {
-        await supabase.from('favorites').insert({ user_id: userId, product_id: productId })
+        await supabase.from('favorites').insert({ user_id: effectiveUserId, product_id: productId })
       }
 
       await loadFavorites()
