@@ -7,6 +7,10 @@ import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import FavoritesPage from './pages/FavoritesPage'
 import ProfilePage from './pages/ProfilePage'
+import AdminLogin from './pages/AdminLogin'
+import AdminDashboard from './pages/AdminDashboard'
+import AdminProducts from './pages/AdminProducts'
+import AdminOrders from './pages/AdminOrders'
 
 export default function App() {
   return (
@@ -22,6 +26,10 @@ export default function App() {
             <Route path="profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
+          <Route path="admin/login" element={<AdminLogin />} />
+          <Route path="admin" element={<AdminDashboard />} />
+          <Route path="admin/products" element={<AdminProducts />} />
+          <Route path="admin/orders" element={<AdminOrders />} />
         </Routes>
       </HashRouter>
     </AppProvider>
