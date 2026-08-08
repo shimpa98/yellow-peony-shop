@@ -86,14 +86,6 @@ export default function ProductCard({ product, compact = false }) {
 
         <div className="product-footer">
           <span className="product-price">{formatPrice(price, currency)}</span>
-          <button
-            type="button"
-            className="btn-add"
-            onClick={handleAdd}
-            disabled={isButtonDisabled}
-          >
-            {adding ? '...' : t.addToCart}
-          </button>
         </div>
       </div>
     </Link>

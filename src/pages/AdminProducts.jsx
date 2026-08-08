@@ -162,9 +162,15 @@ function ProductModal({ product, categories, onSave, onClose }) {
 
       const { error: uploadError } = await supabase.storage
         .from('products')
-        .upload(filePath, file)
+        .upload(filePath, file, {
+          upsert: true,
+          contentType: file.type
+        })
 
-      if (uploadError) throw uploadError
+      if (uploadError) {
+        console.error('Upload error details:', uploadError)
+        throw uploadError
+      }
 
       const { data } = supabase.storage
         .from('products')
@@ -173,7 +179,7 @@ function ProductModal({ product, categories, onSave, onClose }) {
       setForm({ ...form, image_url: data.publicUrl })
     } catch (error) {
       console.error('Error uploading image:', error)
-      alert('Ошибка загрузки фото')
+      alert(`Ошибка загрузки фото: ${error.message}`)
     } finally {
       setUploading(false)
     }

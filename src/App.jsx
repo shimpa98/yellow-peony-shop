@@ -1,6 +1,7 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppProvider } from './context/AppProvider'
 import Layout from './components/Layout'
+import AdminRoute from './components/AdminRoute'
 import CatalogPage from './pages/CatalogPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import CartPage from './pages/CartPage'
@@ -27,9 +28,9 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
           <Route path="admin/login" element={<AdminLogin />} />
-          <Route path="admin" element={<AdminDashboard />} />
-          <Route path="admin/products" element={<AdminProducts />} />
-          <Route path="admin/orders" element={<AdminOrders />} />
+          <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+          <Route path="admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
+          <Route path="admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
         </Routes>
       </HashRouter>
     </AppProvider>
