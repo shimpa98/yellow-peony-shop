@@ -224,12 +224,71 @@ function ProductModal({ product, categories, onSave, onClose }) {
             </select>
           </label>
           <label>
-            Цена
+            Базовая цена (если нет опций)
             <input
               type="number"
               value={form.price || ''}
               onChange={(e) => setForm({ ...form, price: parseFloat(e.target.value) || null })}
             />
+          </label>
+          <label>
+            Опции цены
+            <div className="price-options-editor">
+              {(form.price_options || []).map((opt, index) => (
+                <div key={index} className="price-option-row">
+                  <input
+                    type="text"
+                    placeholder="Название"
+                    value={opt.label || opt.name || ''}
+                    onChange={(e) => {
+                      const newOptions = [...(form.price_options || [])]
+                      newOptions[index] = { ...newOptions[index], label: e.target.value }
+                      setForm({ ...form, price_options: newOptions })
+                    }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Цена"
+                    value={opt.price || ''}
+                    onChange={(e) => {
+                      const newOptions = [...(form.price_options || [])]
+                      newOptions[index] = { ...newOptions[index], price: parseFloat(e.target.value) || null }
+                      setForm({ ...form, price_options: newOptions })
+                    }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Описание"
+                    value={opt.description || ''}
+                    onChange={(e) => {
+                      const newOptions = [...(form.price_options || [])]
+                      newOptions[index] = { ...newOptions[index], description: e.target.value }
+                      setForm({ ...form, price_options: newOptions })
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newOptions = (form.price_options || []).filter((_, i) => i !== index)
+                      setForm({ ...form, price_options: newOptions })
+                    }}
+                    className="btn-remove-option"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  const newOptions = [...(form.price_options || []), { label: '', price: null, description: '' }]
+                  setForm({ ...form, price_options: newOptions })
+                }}
+                className="btn-add-option"
+              >
+                + Добавить опцию
+              </button>
+            </div>
           </label>
           <label>
             Фото

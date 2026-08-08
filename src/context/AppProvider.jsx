@@ -189,9 +189,17 @@ export function AppProvider({ children }) {
   const getProductPrice = useCallback((product, priceOption) => {
     if (priceOption && product.price_options) {
       const options = Array.isArray(product.price_options) ? product.price_options : []
-      const opt = options.find((o) => o.label === priceOption || o.name === priceOption)
+      const opt = options.find((o) => o.label === priceOption || o.name === priceOption || o.option === priceOption)
       if (opt?.price) return Number(opt.price)
     }
+    
+    // If no option selected, return minimum price from options
+    if (product.price_options) {
+      const options = Array.isArray(product.price_options) ? product.price_options : []
+      const prices = options.map(o => Number(o.price)).filter(p => p > 0)
+      if (prices.length > 0) return Math.min(...prices)
+    }
+    
     return Number(product.price ?? 0)
   }, [])
 
