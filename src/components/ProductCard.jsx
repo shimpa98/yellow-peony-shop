@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppProvider'
 import { useTranslation } from '../i18n/translations'
 import './ProductCard.css'
@@ -21,9 +22,10 @@ export default function ProductCard({ product, compact = false }) {
   const options = getPriceOptions(product)
   const price = getProductPrice(product, selectedOption)
   const fav = isFavorite(product.id)
-  const currency = t.currency || 'RUB'
+  const currency = t.currency || 'BYN'
 
-  async function handleAdd() {
+  async function handleAdd(e) {
+    e.stopPropagation()
     setAdding(true)
     await addToCart(product.id, 1, selectedOption)
     setAdding(false)
@@ -37,14 +39,19 @@ export default function ProductCard({ product, compact = false }) {
   const isButtonDisabled = !product.is_available_for_order || adding || (options.length > 0 && !selectedOption)
 
   return (
-    <article className={`product-card${compact ? ' compact' : ''}`}>
+    <Link to={`/product/${product.id}`} className={`product-card${compact ? ' compact' : ''}`}>
       <div className="product-image-wrap">
         {product.image_url ? (
           <img src={product.image_url} alt={product.name} className="product-image" loading="lazy" />
         ) : (
           <div className="product-image-placeholder">🌸</div>
         )}
-        <button type="button" className={`fav-btn${fav ? ' active' : ''}`} onClick={handleToggleFav} aria-label="Избранное">
+        <button 
+          type="button" 
+          className={`fav-btn${fav ? ' active' : ''}`} 
+          onClick={handleToggleFav}
+          aria-label="Избранное"
+        >
           {fav ? '♥' : '♡'}
         </button>
         {!product.is_available_for_order && <span className="out-of-stock">{t.outOfStock}</span>}
@@ -65,7 +72,10 @@ export default function ProductCard({ product, compact = false }) {
                   key={label}
                   type="button"
                   className={`price-option${selectedOption === label ? ' active' : ''}`}
-                  onClick={() => setSelectedOption(label)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setSelectedOption(label)
+                  }}
                 >
                   {label} — {formatPrice(opt.price, currency)}
                 </button>
@@ -86,7 +96,7 @@ export default function ProductCard({ product, compact = false }) {
           </button>
         </div>
       </div>
-    </article>
+    </Link>
   )
 }
 
