@@ -131,6 +131,11 @@ export default function ProfilePage() {
                     <span key={i}>{item.name} × {item.quantity}</span>
                   ))}
                 </div>
+                {order.admin_comment && (
+                  <div className="order-admin-comment">
+                    <strong>Сообщение:</strong> {order.admin_comment}
+                  </div>
+                )}
                 <div className="order-footer">
                   <span>{formatPrice(order.total, currency)}</span>
                   {order.delivery_address && (
