@@ -168,7 +168,7 @@
 
 .btn-update {
   padding: 10px 20px;
-  background: #667eea;
+  background: #FFB300;
   color: white;
   border: none;
   border-radius: 8px;
@@ -185,7 +185,7 @@
 }
 
 .btn-update:hover {
-  background: #5568d3;
+  background: #FF8F00;
 }
 
 .modal-overlay {
@@ -255,7 +255,7 @@
 .modal label select:focus,
 .modal label textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #FFB300;
 }
 
 .modal-actions {
@@ -284,10 +284,10 @@
 }
 
 .modal-actions button[type="submit"] {
-  background: #667eea;
+  background: #FFB300;
   color: white;
 }
 
 .modal-actions button[type="submit"]:hover {
-  background: #5568d3;
+  background: #FF8F00;
 }

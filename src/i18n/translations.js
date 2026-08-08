@@ -6,8 +6,8 @@ export const translations = {
   phonePrefix: '+375', // Always Belarus phone
   
   // Catalog
-  catalogTitle: 'Цветочный магазин',
-  catalogSubtitle: 'Свежие букеты с доставкой',
+  catalogTitle: 'Магазин цветов',
+  catalogSubtitle: 'Свежие цветы с корнем с доставкой',
   searchPlaceholder: 'Поиск цветов...',
   all: 'Все',
   productsNotFound: 'Товары не найдены',

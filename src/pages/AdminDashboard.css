@@ -33,7 +33,7 @@
 
 .btn-logout {
   padding: 10px 20px;
-  background: #f44336;
+  background: #FFB300;
   color: white;
   border: none;
   border-radius: 8px;
@@ -44,7 +44,7 @@
 }
 
 .btn-logout:hover {
-  background: #d32f2f;
+  background: #FF8F00;
 }
 
 .stats-grid {

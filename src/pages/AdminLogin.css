@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #FFB300 0%, #FF8F00 100%);
 }
 
 .login-card {
@@ -21,6 +21,27 @@
   font-size: 24px;
   text-align: center;
   color: #333;
+}
+
+.login-card input:focus {
+  outline: none;
+  border-color: #FFB300;
+}
+
+.login-card button {
+  padding: 12px;
+  background: #FFB300;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.login-card button:hover:not(:disabled) {
+  background: #FF8F00;
 }
 
 .login-card form {
