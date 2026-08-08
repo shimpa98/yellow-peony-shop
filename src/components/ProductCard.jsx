@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppProvider'
+import { useTranslation } from '../i18n/translations'
 import './ProductCard.css'
 
-function formatPrice(price) {
-  return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(price)
+function formatPrice(price, currency = 'RUB') {
+  return new Intl.NumberFormat('ru-RU', { style: 'currency', currency, maximumFractionDigits: 0 }).format(price)
 }
 
 function getPriceOptions(product) {
@@ -12,13 +13,15 @@ function getPriceOptions(product) {
 }
 
 export default function ProductCard({ product, compact = false }) {
-  const { addToCart, toggleFavorite, isFavorite, getProductPrice } = useApp()
+  const { addToCart, toggleFavorite, isFavorite, getProductPrice, t } = useApp()
+  const { lang } = useTranslation()
   const [selectedOption, setSelectedOption] = useState(null)
   const [adding, setAdding] = useState(false)
 
   const options = getPriceOptions(product)
   const price = getProductPrice(product, selectedOption)
   const fav = isFavorite(product.id)
+  const currency = t.currency || 'RUB'
 
   async function handleAdd() {
     setAdding(true)
@@ -31,6 +34,8 @@ export default function ProductCard({ product, compact = false }) {
     await toggleFavorite(product.id)
   }
 
+  const isButtonDisabled = !product.is_available_for_order || adding || (options.length > 0 && !selectedOption)
+
   return (
     <article className={`product-card${compact ? ' compact' : ''}`}>
       <div className="product-image-wrap">
@@ -42,7 +47,7 @@ export default function ProductCard({ product, compact = false }) {
         <button type="button" className={`fav-btn${fav ? ' active' : ''}`} onClick={handleToggleFav} aria-label="Избранное">
           {fav ? '♥' : '♡'}
         </button>
-        {!product.in_stock && <span className="out-of-stock">Нет в наличии</span>}
+        {!product.is_available_for_order && <span className="out-of-stock">{t.outOfStock}</span>}
       </div>
 
       <div className="product-info">
@@ -62,7 +67,7 @@ export default function ProductCard({ product, compact = false }) {
                   className={`price-option${selectedOption === label ? ' active' : ''}`}
                   onClick={() => setSelectedOption(label)}
                 >
-                  {label} — {formatPrice(opt.price)}
+                  {label} — {formatPrice(opt.price, currency)}
                 </button>
               )
             })}
@@ -70,14 +75,14 @@ export default function ProductCard({ product, compact = false }) {
         )}
 
         <div className="product-footer">
-          <span className="product-price">{formatPrice(price)}</span>
+          <span className="product-price">{formatPrice(price, currency)}</span>
           <button
             type="button"
             className="btn-add"
             onClick={handleAdd}
-            disabled={!product.in_stock || adding || (options.length > 0 && !selectedOption)}
+            disabled={isButtonDisabled}
           >
-            {adding ? '...' : 'В корзину'}
+            {adding ? '...' : t.addToCart}
           </button>
         </div>
       </div>

@@ -12,6 +12,7 @@ export default function CheckoutPage() {
   const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const currency = t.currency || 'RUB'
 
   if (cart.length === 0) {
     navigate('/cart', { replace: true })
@@ -61,13 +62,13 @@ export default function CheckoutPage() {
           return (
             <div key={item.product_id} className="checkout-item">
               <span>{product.name} × {item.quantity}</span>
-              <span>{formatPrice(price * item.quantity)}</span>
+              <span>{formatPrice(price * item.quantity, currency)}</span>
             </div>
           )
         })}
         <div className="checkout-total">
           <span>{t.total}</span>
-          <span>{formatPrice(cartTotal)}</span>
+          <span>{formatPrice(cartTotal, currency)}</span>
         </div>
       </div>
 

@@ -3,6 +3,8 @@ export const translations = {
     // Common
     loading: 'Загрузка...',
     back: 'Назад',
+    currency: 'RUB',
+    phonePrefix: '+7',
     
     // Catalog
     catalogTitle: 'Цветочный магазин',
@@ -28,7 +30,7 @@ export const translations = {
     deliveryAddress: 'Адрес доставки',
     addressPlaceholder: 'Город, улица, дом, квартира',
     phone: 'Телефон',
-    phonePlaceholder: '+375 (29) 123-45-67',
+    phonePlaceholder: '+7 (999) 123-45-67',
     comment: 'Комментарий к заказу',
     commentPlaceholder: 'Пожелания к букету, время доставки...',
     submitOrder: 'Подтвердить заказ',
@@ -63,6 +65,8 @@ export const translations = {
     // Common
     loading: 'Загрузка...',
     back: 'Назад',
+    currency: 'BYN',
+    phonePrefix: '+375',
     
     // Catalog
     catalogTitle: 'Кветкавы крам',

@@ -5,6 +5,7 @@ import './Cart.css'
 
 export default function CartPage() {
   const { cart, cartTotal, updateCartQuantity, removeFromCart, getProductPrice, t } = useApp()
+  const currency = t.currency || 'RUB'
 
   if (cart.length === 0) {
     return (
@@ -52,7 +53,7 @@ export default function CartPage() {
               <div className="cart-item-info">
                 <h3>{product.name}</h3>
                 {item.price_option && <p className="cart-item-option">{item.price_option}</p>}
-                <p className="cart-item-price">{formatPrice(price)}</p>
+                <p className="cart-item-price">{formatPrice(price, currency)}</p>
                 <div className="cart-item-actions">
                   <div className="quantity-control">
                     <button type="button" onClick={() => updateCartQuantity(item.product_id, item.quantity - 1)}>−</button>
@@ -70,7 +71,7 @@ export default function CartPage() {
       <div className="cart-summary">
         <div className="cart-total">
           <span>{t.total}</span>
-          <span>{formatPrice(cartTotal)}</span>
+          <span>{formatPrice(cartTotal, currency)}</span>
         </div>
         <Link to="/checkout" className="btn-primary btn-full">{t.checkout}</Link>
       </div>

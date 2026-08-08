@@ -11,6 +11,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [showSuccess, setShowSuccess] = useState(location.state?.orderSuccess ?? false)
+  const currency = t.currency || 'RUB'
 
   const STATUS_LABELS = {
     new: t.statusNew,
@@ -131,7 +132,7 @@ export default function ProfilePage() {
                   ))}
                 </div>
                 <div className="order-footer">
-                  <span>{formatPrice(order.total)}</span>
+                  <span>{formatPrice(order.total, currency)}</span>
                   {order.delivery_address && (
                     <span className="order-address">{order.delivery_address}</span>
                   )}
