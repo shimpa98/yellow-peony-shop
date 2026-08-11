@@ -7,8 +7,11 @@ export default function AdminProducts() {
   const navigate = useNavigate()
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
   const [editingProduct, setEditingProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [filterCategory, setFilterCategory] = useState('')
+  const [filterStock, setFilterStock] = useState('')
   const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
@@ -16,63 +19,71 @@ export default function AdminProducts() {
   }, [])
 
   async function loadData() {
-    try {
-      const [productsData, categoriesData] = await Promise.all([
-        supabase.from('products').select('*, categories(*)').order('name'),
-        supabase.from('categories').select('*').order('sort_order'),
-      ])
-      setProducts(productsData.data || [])
-      setCategories(categoriesData.data || [])
-    } catch (error) {
-      console.error('Error loading data:', error)
-    } finally {
-      setLoading(false)
-    }
+    setLoading(true)
+    const [{ data: prods }, { data: cats }] = await Promise.all([
+      supabase.from('products').select('*').order('name'),
+      supabase.from('categories').select('*').order('name'),
+    ])
+    setProducts(prods ?? [])
+    setCategories(cats ?? [])
+    setLoading(false)
   }
 
-  async function handleSave(product) {
-    try {
-      if (product.id) {
-        await supabase.from('products').update({
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          category_id: product.category_id,
-          image_url: product.image_url,
-          in_stock: product.in_stock,
-          is_available_for_order: product.is_available_for_order,
-          price_options: product.price_options,
-        }).eq('id', product.id)
-      } else {
-        await supabase.from('products').insert([{
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          category_id: product.category_id,
-          image_url: product.image_url,
-          in_stock: product.in_stock,
-          is_available_for_order: product.is_available_for_order,
-          price_options: product.price_options,
-        }])
-      }
-      setShowModal(false)
-      setEditingProduct(null)
-      loadData()
-    } catch (error) {
-      console.error('Error saving product:', error)
-      alert('Ошибка сохранения')
+  const filteredProducts = products.filter((product) => {
+    const matchSearch = !search || product.name.toLowerCase().includes(search.toLowerCase())
+    const matchCategory = !filterCategory || product.category_id === filterCategory
+    const matchStock = 
+      filterStock === '' ||
+      (filterStock === 'in_stock' && product.in_stock) ||
+      (filterStock === 'out_of_stock' && !product.in_stock) ||
+      (filterStock === 'available' && product.is_available_for_order) ||
+      (filterStock === 'not_available' && !product.is_available_for_order)
+    return matchSearch && matchCategory && matchStock
+  })
+
+  async function handleSave(productData) {
+    const dataToSave = {
+      name: productData.name,
+      description: productData.description,
+      category_id: productData.category_id,
+      price: productData.price,
+      price_options: productData.price_options,
+      image_url: productData.image_url,
+      in_stock: productData.in_stock,
+      is_available_for_order: productData.is_available_for_order,
     }
+
+    let error
+    if (editingProduct.id) {
+      const { error: updateError } = await supabase
+        .from('products')
+        .update(dataToSave)
+        .eq('id', editingProduct.id)
+      error = updateError
+    } else {
+      const { error: insertError } = await supabase
+        .from('products')
+        .insert(dataToSave)
+      error = insertError
+    }
+
+    if (error) {
+      alert('Ошибка сохранения: ' + error.message)
+      return
+    }
+
+    setEditingProduct(null)
+    await loadData()
   }
 
   async function handleDelete(id) {
     if (!confirm('Удалить товар?')) return
-    try {
-      await supabase.from('products').delete().eq('id', id)
-      loadData()
-    } catch (error) {
-      console.error('Error deleting product:', error)
-      alert('Ошибка удаления')
+    const { error } = await supabase.from('products').delete().eq('id', id)
+    if (error) {
+      alert('Ошибка удаления: ' + error.message)
+      return
     }
+    await loadData()
   }
 
   function openModal(product = null) {
@@ -100,6 +111,37 @@ export default function AdminProducts() {
 
       <button onClick={() => openModal()} className="btn-add">Добавить товар</button>
 
+      <div className="admin-filters">
+        <input
+          type="search"
+          placeholder="Поиск по названию..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="filter-search"
+        />
+        <select
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+          className="filter-select"
+        >
+          <option value="">Все категории</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>{cat.name}</option>
+          ))}
+        </select>
+        <select
+          value={filterStock}
+          onChange={(e) => setFilterStock(e.target.value)}
+          className="filter-select"
+        >
+          <option value="">Все статусы</option>
+          <option value="in_stock">В наличии</option>
+          <option value="out_of_stock">Нет в наличии</option>
+          <option value="available">Доступен для заказа</option>
+          <option value="not_available">Не доступен</option>
+        </select>
+      </div>
+
       <div className="products-table">
         <table>
           <thead>
@@ -112,7 +154,7 @@ export default function AdminProducts() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <tr key={product.id}>
                 <td>{product.name}</td>
                 <td>{product.categories?.name || '-'}</td>
@@ -149,6 +191,9 @@ export default function AdminProducts() {
 function ProductModal({ product, categories, onSave, onClose }) {
   const [form, setForm] = useState({ ...product })
   const [uploading, setUploading] = useState(false)
+  const [showGallery, setShowGallery] = useState(false)
+  const [galleryImages, setGalleryImages] = useState([])
+  const [loadingGallery, setLoadingGallery] = useState(false)
 
   async function handleImageUpload(e) {
     const file = e.target.files[0]
@@ -182,6 +227,41 @@ function ProductModal({ product, categories, onSave, onClose }) {
       alert(`Ошибка загрузки фото: ${error.message}`)
     } finally {
       setUploading(false)
+    }
+  }
+
+  async function loadGalleryImages() {
+    setLoadingGallery(true)
+    try {
+      const { data, error } = await supabase.storage
+        .from('products')
+        .list('', {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: 'created_at', order: 'desc' }
+        })
+
+      if (error) throw error
+
+      const images = data
+        .filter(file => file.name.match(/\.(jpg|jpeg|png|gif|webp)$/i))
+        .map(file => {
+          const { data: urlData } = supabase.storage
+            .from('products')
+            .getPublicUrl(file.name)
+          return {
+            name: file.name,
+            url: urlData.publicUrl
+          }
+        })
+
+      setGalleryImages(images)
+      setShowGallery(true)
+    } catch (error) {
+      console.error('Error loading gallery:', error)
+      alert('Ошибка загрузки галереи')
+    } finally {
+      setLoadingGallery(false)
     }
   }
 
@@ -292,13 +372,23 @@ function ProductModal({ product, categories, onSave, onClose }) {
           </label>
           <label>
             Фото
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              disabled={uploading}
-            />
-            {uploading && <span className="uploading">Загрузка...</span>}
+            <div className="image-upload-section">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+              {uploading && <span className="uploading">Загрузка...</span>}
+              <button
+                type="button"
+                onClick={loadGalleryImages}
+                disabled={loadingGallery}
+                className="btn-gallery"
+              >
+                {loadingGallery ? 'Загрузка...' : 'Выбрать из галереи'}
+              </button>
+            </div>
           </label>
           {form.image_url && (
             <div className="image-preview">
@@ -334,6 +424,28 @@ function ProductModal({ product, categories, onSave, onClose }) {
             <button type="submit">Сохранить</button>
           </div>
         </form>
+        {showGallery && (
+          <div className="gallery-modal">
+            <div className="gallery-header">
+              <h3>Выберите фото</h3>
+              <button type="button" onClick={() => setShowGallery(false)} className="btn-close-gallery">✕</button>
+            </div>
+            <div className="gallery-grid">
+              {galleryImages.map((img) => (
+                <div
+                  key={img.name}
+                  className={`gallery-item${form.image_url === img.url ? ' selected' : ''}`}
+                  onClick={() => {
+                    setForm({ ...form, image_url: img.url })
+                    setShowGallery(false)
+                  }}
+                >
+                  <img src={img.url} alt={img.name} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -22,7 +22,17 @@ export default function CatalogPage() {
   const filtered = products.filter((p) => {
     const matchCategory = !activeCategory || p.category_id === activeCategory
     const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase())
-    return matchCategory && matchSearch && p.is_available_for_order !== false
+    return matchCategory && matchSearch
+  }).sort((a, b) => {
+    // Sort by availability: available items first, then unavailable
+    const aAvailable = a.is_available_for_order !== false && a.in_stock
+    const bAvailable = b.is_available_for_order !== false && b.in_stock
+    
+    if (aAvailable && !bAvailable) return -1
+    if (!aAvailable && bAvailable) return 1
+    
+    // Then sort by name
+    return a.name.localeCompare(b.name)
   })
 
   return (
